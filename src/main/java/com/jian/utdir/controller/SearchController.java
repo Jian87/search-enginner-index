@@ -28,8 +28,11 @@ public class SearchController {
 	@RequestMapping("/parse")
 	public String parse() {
 		
-		File dataFolder = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\data");
-		File stopFile = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\a2\\resources\\stopwords");
+		// data folder path, eg. C:\\Users\\lixua\\Documents\\2021spring\\6322\\data
+		File dataFolder = new File("");
+		
+		// stop file path, eg. C:\\Users\\lixua\\Documents\\2021spring\\6322\\a2\\resources\\stopwords
+		File stopFile = new File("");
 
 		try {
 			parser.readStopFile(stopFile);

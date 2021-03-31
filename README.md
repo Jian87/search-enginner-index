@@ -1,6 +1,5 @@
 # final
  school project
- =======
  
  # how to run
  

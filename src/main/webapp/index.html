@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<script src="jquery-3.5.1.min.js"></script>
+<script>
+	$(document).ready(function(){
+	
+	    $.ajax({
+	        url: "/search",
+	        type: 'GET',
+	        dataType: 'json',
+	        success: function(value, data){
+	            console.log(data);
+	        }
+	    });
+		}
+	)
+</script>
+
+</head>
+<body>
+	<div align="center">
+		<h2>this is the test html home page</h2>
+		<hr>
+
+		<form action="search" method="get">
+			<input type="text" name="searchContent"> <input type="submit"
+				value="Search">
+		</form>
+
+	</div>
+
+</body>
+</html>

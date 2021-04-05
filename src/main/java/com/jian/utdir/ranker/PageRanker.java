@@ -39,6 +39,7 @@ public class PageRanker {
 				PageRankNode currPageNode, inlinkPageNode;
 
 				String line = myReader.nextLine();
+                line = line.toLowerCase();
 
 				String[] tokens = line.split(" ");
 				currPageId = tokens[0];
@@ -62,12 +63,15 @@ public class PageRanker {
 						currPageNode.getInLinks().add(inlinkPageNode);
 
 					inlinkPageNode.getOutLinks().add(currPageNode);
+
+                    pageGraph.put(inlinkId, inlinkPageNode);
 				}
+
+                pageGraph.put(currPageId, currPageNode);
 			}
 
 			myReader.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -78,7 +82,7 @@ public class PageRanker {
 
 		for (PageRankNode pageNode : pageGraph.values()) {
 			pageNode.setPageRank(initValue);
-
+            //pageNode.setPageRank(1.0 / pageNode.getOutLinks().size());
 			if (pageNode.getOutLinks().size() == 0) {
 				listNodes.add(pageNode);
 			}
@@ -87,35 +91,50 @@ public class PageRanker {
 
 	public void runPageRank() {
 
-		double accPageRank;
+		//double accPageRank;
 		double newPageRank[] = new double[numberOfNodes];
 		double d = 0.85;
-		int index = 0;
+		int index = 0, iteration = 0;
+		boolean flag = false;
+		
 
-		while (!isConverge()) {
-			accPageRank = 0;
+		while (!flag && iteration < 20) {
+			//accPageRank = 0;
 			index = 0;
 
-			for (PageRankNode pageNode : listNodes) {
-				accPageRank += pageNode.getPageRank();
-			}
+			//for (PageRankNode pageNode : listNodes) {
+			//	accPageRank += pageNode.getPageRank();
+			//}
 
 			for (PageRankNode pageNode : pageGraph.values()) {
-				newPageRank[index] = ((1.0 - d) + (d * accPageRank)) / numberOfNodes;
+				//newPageRank[index] = ((1.0 - d) + (d * accPageRank)) / (double)numberOfNodes;
+                newPageRank[index] = 1.0 - d;
 				for (PageRankNode inlistNode : pageNode.getInLinks()) {
-					newPageRank[index] += d * inlistNode.getPageRank() / inlistNode.getOutLinks().size();
+					newPageRank[index] += d * inlistNode.getPageRank() / (double)inlistNode.getOutLinks().size();
 				}
 				index++;
 			}
 
 			index = 0;
+			int cunt = 0;
 
 			for (PageRankNode pageNode : pageGraph.values()) {
+				String s1 = String.format("%.5f", pageNode.getPageRank()), s2 = String.format("%.5f" ,newPageRank[index]);
 				pageNode.setPageRank(newPageRank[index++]);
+				
+				if(!s1.equals(s2)) {
+					cunt++;
+				}
 			}
 
-			perplexity.add(getPerplexity());
+            if(cunt == 0) {
+                flag = true;
+            }
+
+			iteration++;
 		}
+
+        System.out.println("Run " + iteration + " iterations");
 
 	}
 
@@ -137,24 +156,24 @@ public class PageRanker {
 		return ansMap;
 	}
 
-	public double getPerplexity() {
-		double sum = 0;
-		for (PageRankNode pageNode : pageGraph.values()) {
-			sum += pageNode.getPageRank() * (Math.log(pageNode.getPageRank()) / Math.log(2));
-		}
+//	public double getPerplexity() {
+//		double sum = 0;
+//		for (PageRankNode pageNode : pageGraph.values()) {
+//			sum += pageNode.getPageRank() * (Math.log(pageNode.getPageRank()) / Math.log(2));
+//		}
+//
+//		return Math.pow(2, -sum);
+//	}
 
-		return Math.pow(2, -sum);
-	}
-
-	public boolean isConverge() {
-		if (perplexity.size() < 4)
-			return false;
-		for (int i = perplexity.size() - 1; i > perplexity.size() - 4; i--) {
-			double perplexityOne = perplexity.get(i);
-			double perplexityTwo = perplexity.get(i - 1);
-			if ((int) perplexityOne % 10 != (int) perplexityTwo % 10 || perplexityOne - perplexityTwo > 1.0)
-				return false;
-		}
-		return true;
-	}
+//	public boolean isConverge() {
+//		if (perplexity.size() < 4)
+//			return false;
+//		for (int i = perplexity.size() - 1; i > perplexity.size() - 4; i--) {
+//			double perplexityOne = perplexity.get(i);
+//			double perplexityTwo = perplexity.get(i - 1);
+//			if ((int) perplexityOne % 10 != (int) perplexityTwo % 10 || perplexityOne - perplexityTwo > 1.0)
+//				return false;
+//		}
+//		return true;
+//	}
 }

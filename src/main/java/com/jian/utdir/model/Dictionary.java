@@ -3,38 +3,36 @@ package com.jian.utdir.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.jian.utdir.parser.Handler;
-import com.jian.utdir.ranker.PageRanker;
 
 public class Dictionary {
-	
-	@Autowired
-	PageRanker pageRanker;
 
 	private Map<String, PostingList> stemDict;
-	private Map<String, DocNode> stemFileDict;
+	private Map<String, FileNode> fileDict;
+	private int numberOfDocs;
 
 	public Dictionary() {
 
 		this.stemDict = new HashMap<String, PostingList>();
-		this.stemFileDict = new HashMap<String, DocNode>();
+		this.fileDict = new HashMap<String, FileNode>();
+		this.numberOfDocs = 0;
 	}
 
-	public void add(Handler handler) {
-
-		String fileName = handler.getFileName();
-
-		if (!stemFileDict.containsKey(fileName)) {
-			stemFileDict.put(fileName, handler.getDocStemNode());
-		}
+	public void add(Handler handler, double pageRank, FileContent fileContent) {
 		
-		updateDictMap(stemDict, handler.getDocStemNode());
+		String link = handler.getFileName();
+		String title = fileContent.getTitle();
+		String description = fileContent.getContent().length() > 50? fileContent.getContent().substring(0,50): fileContent.getContent();
+		
+		FileNode fileNode = new FileNode(link, title, description);
+		fileDict.put(fileNode.getLink(), fileNode);
+		
+		this.numberOfDocs += 1;
+		updateDictMap(stemDict, handler.getDocStemNode(), pageRank);
 
 	}
 	
-	public void updateDictMap(Map<String, PostingList> appendTo, DocNode docNode) {
+	public void updateDictMap(Map<String, PostingList> appendTo, DocNode docNode, double pageRank) {
 		
 		Map<String, Integer> appendFrom = docNode.getTermFreqMap();
 		
@@ -60,7 +58,6 @@ public class Dictionary {
 			postingListNode.setTermFreqInCurrDoc(docNode.getTermFreqMap().get(term));
 			pageRankPostingListNode.setTermFreqInCurrDoc(docNode.getTermFreqMap().get(term));
 			
-			double pageRank =  0.0; //pageRanker.pageGraph.get(docNode.getDocId()).getPageRank();
 			double tf_weight = Double.parseDouble(String.format("%.4f", 1.0 + Math.log10(postingListNode.getTermFreqInCurrDoc())));
 			
 			postingListNode.setTermFreqWeight(tf_weight);
@@ -70,7 +67,7 @@ public class Dictionary {
 			postingList.getHighTWList().add(postingListNode);
 			postingList.getHighPageRankPostingListNodes().add(pageRankPostingListNode);
 			postingList.sortHigh();
-			
+						
 			if(postingList.getHighTWList().size() > 100) {
 				postingList.getLowTWList().add(postingList.getHighTWList().get(100));
 				postingList.getHighTWList().remove(100);
@@ -91,7 +88,6 @@ public class Dictionary {
 				}
 			}
 			
-			
 			appendTo.put(term, postingList);
 		}
 	}
@@ -104,11 +100,19 @@ public class Dictionary {
 		this.stemDict = stemDict;
 	}
 
-	public Map<String, DocNode> getStemFileDict() {
-		return stemFileDict;
+	public int getNumberOfDocs() {
+		return numberOfDocs;
 	}
 
-	public void setStemFileDict(Map<String, DocNode> stemFileDict) {
-		this.stemFileDict = stemFileDict;
+	public void setNumberOfDocs(int numberOfDocs) {
+		this.numberOfDocs = numberOfDocs;
+	}
+
+	public Map<String, FileNode> getFileDict() {
+		return fileDict;
+	}
+
+	public void setFileDict(Map<String, FileNode> fileDict) {
+		this.fileDict = fileDict;
 	}
 }

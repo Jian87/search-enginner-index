@@ -13,12 +13,18 @@ public class Handler {
 	private Set<String> stops;
 	private String fileName;
 	
+	// once I have the link map, I will need this
+	// private String link;
+	
 	public Handler() {
 		
 	}
 	
 	public Handler(Set<String> stops, String fileName) {
 		this.stops = stops;
+		
+		// once I have link map, I will need to modify the structure of docNode
+		// I will need add one param link into docnode
 		this.docStemNode = new DocNode(fileName);
 		this.fileName = fileName;
 	}

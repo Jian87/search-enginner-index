@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.jian.utdir.dao.SearchDAOImpl;
 import com.jian.utdir.dto.DocDTO;
+import com.jian.utdir.dto.SearchResultDTO;
 import com.jian.utdir.parser.Parser;
 import com.jian.utdir.parser.Tokenization;
 import com.jian.utdir.stem.MyStemmer;
@@ -28,22 +29,26 @@ public class SearchServiceImpl {
 	@Autowired
 	SearchDAOImpl searchDAO;
 
-	public List<String> search(String inputContent) {
+	public List<List<SearchResultDTO>> search(String inputContent) {
 
 		if (inputContent == null || inputContent.isEmpty()) {
 			return null;
 		}
 
-		List<DocDTO> docDTOs = searchDAO.search(getQueryTerms(inputContent));
-
-		// from the docNodes get the link of each doc, then put them input a list
-		List<String> webs = new ArrayList<String>();
-
-		for (DocDTO docDTO : docDTOs) {
-			webs.add(docDTO.docId);
+		List<List<DocDTO>> docDTOs = searchDAO.search(getQueryTerms(inputContent));
+		List<List<SearchResultDTO>> searchResults = new ArrayList<>();
+		
+		for(List<DocDTO> docDTO: docDTOs) {
+			List<SearchResultDTO> searchResult = new ArrayList<>();
+			for (DocDTO doc : docDTO) {
+				SearchResultDTO searchResultDTO = new SearchResultDTO(doc.docId, doc.title, doc.description);
+				searchResult.add(searchResultDTO);
+			}
+			searchResults.add(searchResult);
 		}
+		
 
-		return webs;
+		return searchResults;
 	}
 
 	public List<String> getQueryTerms(String input) {

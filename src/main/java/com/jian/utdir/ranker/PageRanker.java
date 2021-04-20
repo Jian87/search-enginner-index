@@ -28,7 +28,7 @@ public class PageRanker {
 		numberOfNodes = 0;
 	}
 
-	public void initGraph(File linkFile) {
+	public void initGraph(File linkFile, Map<String, String> id2urlMap) {
 
 		Scanner myReader;
 		try {
@@ -41,7 +41,12 @@ public class PageRanker {
 				String line = myReader.nextLine();
                 line = line.toLowerCase();
 
-				String[] tokens = line.split(" ");
+				String[] tokens = line.split("\\s+");
+				
+				if(tokens.length != 2 || tokens[1].equals("null") || !id2urlMap.containsKey(tokens[0]) || !id2urlMap.containsKey(tokens[1])) {
+					continue;
+				}
+				
 				currPageId = tokens[0];
 
 				if (!pageGraph.containsKey(currPageId)) {
@@ -74,6 +79,8 @@ public class PageRanker {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println("page graph map size: " + pageGraph.size());
 	}
 
 	public void initialize() {

@@ -7,22 +7,22 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-public class HITSBACKUP {
-	Map<String, Double> authMap;
-	Map<String, Double> hubMap;
-	Map<String, Set<String>> graph; // recorde node and its hubs(source nodes);
+public class HITSAlgo {
+	public Map<String, Double> authMap;
+	public Map<String, Double> hubMap;
+	public Map<String, Set<String>> graph; // recorde node and its hubs(source nodes);
 
-	public HITSBACKUP() {
+	public HITSAlgo() {
         authMap = new HashMap<>();
         hubMap = new HashMap<>();
         graph = new HashMap<>();
     }
 
-	public void hits(String fileName) {
+	public void hits(File file, Map<String, String> id2urlMap) {
 
 		Set<String> linkCount = new HashSet<>();
 		try {
-			Scanner scanner = new Scanner(new File(fileName));
+			Scanner scanner = new Scanner(file);
 			while (scanner.hasNext()) {
 				String line = scanner.nextLine();
 				if (line.isEmpty()) {
@@ -30,6 +30,9 @@ public class HITSBACKUP {
 				}
 				line = line.toLowerCase();
 				String[] links = line.split("\\s+");
+				if(links.length != 2 || links[1].equals("null") || !id2urlMap.containsKey(links[0]) || !id2urlMap.containsKey(links[1])) {
+					continue;
+				}
 				String currLink = links[0];
 				linkCount.add(currLink);
 
@@ -91,7 +94,7 @@ public class HITSBACKUP {
 
 	public void init(Set<String> links) {
 
-		int count = links.size();
+		//int count = links.size();
 
 		for (String link : links) {
 			// hubMap.put(link, 1.0 / (double) count);

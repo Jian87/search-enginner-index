@@ -2,7 +2,13 @@ package com.jian.utdir.service;
 
 import java.util.List;
 
-public interface SearchService {
+import com.jian.utdir.dto.SearchResultDTO;
 
-	List<String> search(String inputContent);
+/*
+ * deprecated interface
+ */
+
+public interface SearchService {
+	
+	List<List<SearchResultDTO>> search(String inputContent);
 }

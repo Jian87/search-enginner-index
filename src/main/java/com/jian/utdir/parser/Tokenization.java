@@ -11,7 +11,7 @@ public class Tokenization {
 		
 		line = transformString(line);
 		
-		String[] words = line.split(" ");
+		String[] words = line.split("\\s+");
 		
 		for(String token: words) {
 			if(token.isEmpty()) {

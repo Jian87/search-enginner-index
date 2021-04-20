@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.jian.utdir.dto.DocDTO;
 import com.jian.utdir.dto.SearchDTO;
-import com.jian.utdir.model.DocNode;
+import com.jian.utdir.model.FileNode;
+import com.jian.utdir.model.PageRankPostingListNode;
 import com.jian.utdir.model.PostingList;
 import com.jian.utdir.model.PostingListNode;
 import com.jian.utdir.parser.Parser;
@@ -24,23 +25,13 @@ public class SearchDAOImpl implements SearchDAO {
 	Parser parser;
 
 	@Override
-	public List<DocDTO> search(List<String> terms) {
+	public List<List<DocDTO>> search(List<String> terms) {
 
 		Map<String, PostingList> termDict = parser.getDictionary().getStemDict();
-		Map<String, DocNode> docDict = parser.getDictionary().getStemFileDict();
-		int N = docDict.size();
+		Map<String, FileNode> fileDict = parser.getDictionary().getFileDict();
+		
+		int N = parser.getDictionary().getNumberOfDocs();
 		int numOfQueryTerms = terms.size();
-
-//		System.out.println("search terms: " + terms);
-
-		// length[N]
-		Map<String, Double> tw_normalize = new HashMap<String, Double>();
-
-		// weight[N]
-		Map<String, Double> weight = new HashMap<String, Double>();
-
-		// record how many query terms show up in a doc
-		Map<String, Integer> count = new HashMap<String, Integer>();
 
 		// sort query terms by IDF weight;
 		List<SearchDTO> queryDTOs = new ArrayList<>();
@@ -59,16 +50,99 @@ public class SearchDAOImpl implements SearchDAO {
 		}
 
 		Collections.sort(queryDTOs, (a, b) -> b.compareTo(a));
-		System.out.println(queryDTOs);
 		
 		// if there are too many query terms, throw the terms which contain low idf;
 		if(numOfQueryTerms >= 4) {
 			queryDTOs = queryDTOs.subList(0, (int)(0.75 * numOfQueryTerms));
 		}
 		
-		System.out.println(queryDTOs);
+		
+		
+		List<DocDTO> searchResultBasedOnTFIDF = getSearchResultBasedOnTFIDF(queryDTOs, "tf_idf", termDict, fileDict);
+		List<DocDTO> searchResultBasedOnPagerank  = getSearchResultBasedOnPageRank(queryDTOs, "pagerank", termDict, fileDict);
+		
+		List<List<DocDTO>> searchResult = new ArrayList<List<DocDTO>>();
+		searchResult.add(searchResultBasedOnTFIDF);
+		searchResult.add(searchResultBasedOnPagerank);
+		
+		return searchResult;
+	}
+	
+	public List<DocDTO> getSearchResultBasedOnPageRank(List<SearchDTO> queryDTOs, String basedMethod, 
+			Map<String, PostingList> termDict, Map<String, FileNode> fileDict) {
+		
+		Map<String, Double> weight = new HashMap<String, Double>();
+		
+		for (SearchDTO searchDTO : queryDTOs) {
 
-		// check the term one by one from high idf to low idf;
+			String term = searchDTO.getTerm();
+			
+			System.out.println(term + " high list size: " + termDict.get(term).getHighPageRankPostingListNodes().size());
+
+			// at first only consider the high tw docs
+			for (PageRankPostingListNode pageRankPostingListNode : termDict.get(term).getHighPageRankPostingListNodes()) {
+				String docId = pageRankPostingListNode.getDocId();
+				double w = weight.getOrDefault(docId, 0.0);
+				
+				weight.put(docId, w + pageRankPostingListNode.getPageRank());
+			}
+		}
+		
+		if(weight.size() < 10) {
+			for (SearchDTO searchDTO : queryDTOs) {
+
+				String term = searchDTO.getTerm();
+				
+				System.out.println(term + " low list size: " + termDict.get(term).getLowPageRankPostingListNodes().size());
+
+				// at first only consider the high tw docs
+				for (PageRankPostingListNode pageRankPostingListNode : termDict.get(term).getLowPageRankPostingListNodes()) {
+					String docId = pageRankPostingListNode.getDocId();
+					double w = weight.getOrDefault(docId, 0.0);
+					
+					weight.put(docId, w + pageRankPostingListNode.getPageRank());
+				}
+			}
+		}
+		
+		PriorityQueue<DocDTO> pq = new PriorityQueue<DocDTO>((a, b) -> a.compareTo(b));
+
+		for (String docId : weight.keySet()) {
+
+			// each docDTO will have its corresponding similarity
+			DocDTO docDTO = new DocDTO(docId, weight.get(docId), 
+					fileDict.get(docId).getTitle(), fileDict.get(docId).getDescription());
+			
+			pq.add(docDTO);
+
+			if (pq.size() > 10) {
+				pq.poll();
+			}
+		}
+
+		List<DocDTO> searchResult = new ArrayList<DocDTO>();
+
+		while (!pq.isEmpty()) {
+			searchResult.add(0, pq.poll());
+		}
+		
+		System.out.println(searchResult);
+		
+		return searchResult;
+	}
+	
+	public List<DocDTO> getSearchResultBasedOnTFIDF(List<SearchDTO> queryDTOs, String basedMethod, 
+			Map<String, PostingList> termDict, Map<String, FileNode> fileDict) {
+		
+		// length[N]
+		Map<String, Double> tw_normalize = new HashMap<String, Double>();
+
+		// weight[N]
+		Map<String, Double> weight = new HashMap<String, Double>();
+
+		// record how many query terms show up in a doc
+		Map<String, Integer> count = new HashMap<String, Integer>();
+		
 		for (SearchDTO searchDTO : queryDTOs) {
 
 			String term = searchDTO.getTerm();
@@ -90,7 +164,7 @@ public class SearchDAOImpl implements SearchDAO {
 		
 		// if the seach result is too small, check the low tw docs in each term's
 		// postting list
-		if (weight.size() < 50) {
+		if (weight.size() < 10) {
 
 			for (SearchDTO searchDTO : queryDTOs) {
 
@@ -113,10 +187,12 @@ public class SearchDAOImpl implements SearchDAO {
 		for (String docId : weight.keySet()) {
 
 			// each docDTO will have its corresponding similarity
-			DocDTO docDTO = new DocDTO(docId, weight.get(docId) / (Math.sqrt(tw_normalize.get(docId))));
+			DocDTO docDTO = new DocDTO(docId, weight.get(docId) / (Math.sqrt(tw_normalize.get(docId))), 
+					fileDict.get(docId).getTitle(), fileDict.get(docId).getDescription());
+			
 			pq.add(docDTO);
 
-			if (pq.size() > 50) {
+			if (pq.size() > 10) {
 				pq.poll();
 			}
 		}
@@ -126,10 +202,14 @@ public class SearchDAOImpl implements SearchDAO {
 		while (!pq.isEmpty()) {
 			searchResult.add(0, pq.poll());
 		}
-
+		
 		System.out.println(searchResult);
 		
 		return searchResult;
 	}
+	
+	
+	
+	
 
 }

@@ -4,13 +4,17 @@ public class DocDTO implements Comparable<DocDTO> {
 
 	public String docId;
 	public double weight;
+	public String title;
+	public String description;
 	
-	public DocDTO(String docId, double weight) {
+	public DocDTO(String docId, double weight, String title, String description) {
 		
 		this.docId = docId;
 		this.weight = weight;
+		this.title = title;
+		this.description = description;
 	}
-	
+
 	@Override
 	public int compareTo(DocDTO o) {
 		

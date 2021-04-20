@@ -6,5 +6,5 @@ import com.jian.utdir.dto.DocDTO;
 
 public interface SearchDAO {
 
-	List<DocDTO> search(List<String> terms);
+	List<List<DocDTO>> search(List<String> terms);
 }

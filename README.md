@@ -14,12 +14,20 @@
  # how to test
  there are jsp pages and several controllers to help us test.
  
- At first, please prepare some test data and corresponding web graph data.
+ At first, please download the test data[https://drive.google.com/file/d/10MkwjZYXiNivZUKAEWOAVYqaWGTGPE_n/view?usp=sharing] to local.
  
  step 1: modify the data input path in controller method: parse
  
  step 2: run this spring boot app
  
  enter localhost:8080/parse in your browser, wait for the page jumping happens. Once the page jumps to "/", you can input querys to do the test.
+ 
+ # tips 
+ the search result return two arrays in json format, array 1 hold search result based on TF-IDF, array 2 hold search result based on PageRank + HITS
+ 
+ you can modify the number of search result in SearchDAOImpl;
+ 
+ you can modify the length of description of each search result in Dictionary => add(method)
+ 
  
  

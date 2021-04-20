@@ -14,7 +14,7 @@
  # how to test
  there are jsp pages and several controllers to help us test.
  
- At first, please download the test data[https://drive.google.com/file/d/10MkwjZYXiNivZUKAEWOAVYqaWGTGPE_n/view?usp=sharing] to local.
+ At first, please download the [test data]https://drive.google.com/file/d/10MkwjZYXiNivZUKAEWOAVYqaWGTGPE_n/view?usp=sharing to local.
  
  step 1: modify the data input path in controller method: parse
  

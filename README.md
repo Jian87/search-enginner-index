@@ -29,5 +29,7 @@
  
  you can modify the length of description of each search result in Dictionary => add(method)
  
+ if you find there is err about Jsoup, don't worry, that's because the parse part need Jsoup, you can download this lib from [here](https://jsoup.org/) and add it into your classpath.
+ 
  
  

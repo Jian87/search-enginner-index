@@ -25,6 +25,8 @@
  # tips 
  the search result return two arrays in json format, array 1 hold search result based on TF-IDF, array 2 hold search result based on PageRank + HITS
  
+ each search result item return in this json format{link: "", title: "", description: ""};
+ 
  you can modify the number of search result in SearchDAOImpl;
  
  you can modify the length of description of each search result in Dictionary => add(method)

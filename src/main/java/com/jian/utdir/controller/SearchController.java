@@ -30,6 +30,7 @@ public class SearchController {
 	@Autowired
 	PageRanker pageRanker;
 	
+	@ResponseBody
 	@RequestMapping("/parse")
 	public String parse() {
 		
@@ -47,7 +48,7 @@ public class SearchController {
 			e.printStackTrace();
 		}
 		
-		return "redirect:/";
+		return "successfully";
 	}
 	
 

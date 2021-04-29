@@ -80,13 +80,18 @@ public class PageRanker {
 			e.printStackTrace();
 		}
 		
-		System.out.println("page graph map size: " + pageGraph.size());
+		runPageRank();
 	}
 
 	public void initialize() {
 		numberOfNodes = pageGraph.size();
 		// double initValue = 1.0 / numberOfNodes;
-
+		System.out.println("current page graph size: " + numberOfNodes);
+		
+		// calculate the total links and max inlink number
+		
+		
+		
 		//System.out.println("init pg rank value: ");
 		for (PageRankNode pageNode : pageGraph.values()) {
 			// pageNode.setPageRank(initValue);
@@ -104,6 +109,20 @@ public class PageRanker {
 
 		// double accPageRank;
 		// double newPageRank[] = new double[numberOfNodes];
+//		System.out.println("page graph map size: " + pageGraph.size());
+//		int max_currout = 0, total_links = 0;
+//		for (PageRankNode pageNode : pageGraph.values()) {
+//			// pageNode.setPageRank(initValue);
+//			pageNode.setPageRank(1.0 / pageNode.getOutLinks().size());
+//			if (pageNode.getOutLinks().size() == 0) {
+//				listNodes.add(pageNode);
+//			}
+//
+//			total_links += pageNode.getOutLinks().size();
+//			max_currout = Math.max(pageNode.getOutLinks().size(), max_currout);
+//		}
+//		System.out.println("The max out link is: " + max_currout);
+//		System.out.println("The total link after modify is: " + total_links);
 
 		Map<String, Double> newPageRankMap = new HashMap<>();
 		double d = 0.85;
@@ -157,7 +176,7 @@ public class PageRanker {
 			iteration++;
 		}
 
-		System.out.println("Run " + iteration + " iterations");
+		//System.out.println("Page Ranker Run " + iteration + " iterations");
 
 	}
 

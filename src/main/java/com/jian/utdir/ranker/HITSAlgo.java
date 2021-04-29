@@ -89,7 +89,7 @@ public class HITSAlgo {
 			hubMap.put(key, Double.parseDouble(String.format("%.3f", scaleHub.get(key))));
 		}
 
-		System.out.println("iterations are: " + iter);
+		//System.out.println(" hits iterations are: " + iter);
 	}
 
 	public void init(Set<String> links) {

@@ -30,12 +30,11 @@ public class SearchController {
 	@Autowired
 	PageRanker pageRanker;
 	
-	@ResponseBody
 	@RequestMapping("/parse")
 	public String parse() {
 		
 		// data folder path, eg. C:\\Users\\lixua\\Documents\\2021spring\\6322\\data
-		File dataFolder = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\java_project\\data");
+		File dataFolder = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\java_project\\test");
 		
 		// stop file path, eg. C:\\Users\\lixua\\Documents\\2021spring\\6322\\a2\\resources\\stopwords
 		File stopFile = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\a2\\resources\\stopwords");
@@ -48,7 +47,7 @@ public class SearchController {
 			e.printStackTrace();
 		}
 		
-		return "successfully";
+		return "redirect:/";
 	}
 	
 

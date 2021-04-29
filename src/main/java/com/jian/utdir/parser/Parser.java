@@ -53,6 +53,9 @@ public class Parser {
 	public void readFiles(File folder) throws IOException {
 		
 		for(File countryFolder: folder.listFiles()) {
+			if(countryFolder.listFiles() == null) {
+				continue;
+			}
 			File dataFolder = null, webgraphFile = null, id2url = null;
 			for(File file: countryFolder.listFiles()) {
 				if(file.isDirectory()) {
@@ -64,6 +67,10 @@ public class Parser {
 				} else if(file.getName().equals("id2url")) {
 					id2url = file;
 				}
+			}
+			
+			if(dataFolder == null || webgraphFile == null || id2url == null) {
+				continue;
 			}
 			
 			Set<String> linkSet = new HashSet<>();
@@ -127,7 +134,7 @@ public class Parser {
 			}
 		}
 		
-		System.out.println(linkSet.size());
+		// System.out.println("total web site I collected: " + linkSet.size());
 		
 		return hmap;
 	}

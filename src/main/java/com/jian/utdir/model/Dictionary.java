@@ -23,6 +23,9 @@ public class Dictionary {
 		String link = handler.getFileName();
 		String title = fileContent.getTitle();
 		String description = fileContent.getContent().length() > 50? fileContent.getContent().substring(0,50): fileContent.getContent();
+		// if need the content of website, use code below
+		// String description = fileContent.getContent();
+		
 		
 		FileNode fileNode = new FileNode(link, title, description);
 		fileDict.put(fileNode.getLink(), fileNode);

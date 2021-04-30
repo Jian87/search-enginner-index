@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +20,7 @@ import com.jian.utdir.parser.Parser;
 import com.jian.utdir.ranker.PageRanker;
 import com.jian.utdir.service.SearchServiceImpl;
 
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @Controller
 public class SearchController {
 	
@@ -30,11 +32,13 @@ public class SearchController {
 	@Autowired
 	PageRanker pageRanker;
 	
+	@CrossOrigin
+	@ResponseBody
 	@RequestMapping("/parse")
 	public String parse() {
 		
 		// data folder path, eg. C:\\Users\\lixua\\Documents\\2021spring\\6322\\data
-		File dataFolder = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\java_project\\data");
+		File dataFolder = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\java_project\\test");
 		
 		// stop file path, eg. C:\\Users\\lixua\\Documents\\2021spring\\6322\\a2\\resources\\stopwords
 		File stopFile = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\a2\\resources\\stopwords");
@@ -47,7 +51,7 @@ public class SearchController {
 			e.printStackTrace();
 		}
 		
-		return "redirect:/";
+		return "success";
 	}
 	
 
@@ -58,11 +62,14 @@ public class SearchController {
 	}
 	
 	
+	@CrossOrigin
 	@ResponseBody
 	@RequestMapping( value = "/search", produces="application/json")
 	public List<List<SearchResultDTO>> search(@RequestParam("searchContent") String searchContent) {
 		
-		if(searchContent == null) {
+		searchContent = searchContent.trim();
+		
+		if(searchContent == null || searchContent.isEmpty()) {
 			return null;
 		}
 		

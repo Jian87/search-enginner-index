@@ -128,8 +128,22 @@ public class Parser {
 		for (File subfolder : folder.listFiles()) {
 			for(File file: subfolder.listFiles()) {
 				String fileName = decodeFileName(file.getName());
+				int index = fileName.lastIndexOf(".");
+	            if (index != -1) {
+	                String extension = fileName.substring(index + 1).toLowerCase();
+	                if (extension.equals("png") || extension.equals("jpg") || extension.equals("jpeg")
+	                        || extension.equals("tiff") || extension.equals("gif") || extension.equals("ico")
+	                        || extension.equals("icon") || extension.equals("pdf")) {
+	                    continue;
+	                }
+	            }
 				linkSet.add(fileName);
 				String[] fileContent = getDOM(file);
+				if(fileContent == null) {
+					linkSet.remove(fileName);
+					continue;
+				}
+				
 				hmap.put(fileName, new FileContent(fileName, fileContent[0], fileContent[1]));
 			}
 		}

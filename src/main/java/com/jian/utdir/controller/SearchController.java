@@ -20,7 +20,7 @@ import com.jian.utdir.parser.Parser;
 import com.jian.utdir.ranker.PageRanker;
 import com.jian.utdir.service.SearchServiceImpl;
 
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 86400)
 @Controller
 public class SearchController {
 	

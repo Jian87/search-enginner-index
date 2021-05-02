@@ -38,7 +38,7 @@ public class SearchController {
 	public String parse() {
 		
 		// data folder path, eg. C:\\Users\\lixua\\Documents\\2021spring\\6322\\data
-		File dataFolder = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\java_project\\test");
+		File dataFolder = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\java_project\\data");
 		
 		// stop file path, eg. C:\\Users\\lixua\\Documents\\2021spring\\6322\\a2\\resources\\stopwords
 		File stopFile = new File("C:\\Users\\lixua\\Documents\\2021spring\\6322\\a2\\resources\\stopwords");
@@ -74,7 +74,7 @@ public class SearchController {
 		}
 		
 		List<List<SearchResultDTO>> jsonObjs = searchService.search(searchContent);
-		
+
 		return jsonObjs;
 	}
 }

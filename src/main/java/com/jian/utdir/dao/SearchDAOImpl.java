@@ -35,14 +35,29 @@ public class SearchDAOImpl implements SearchDAO {
 
 		// sort query terms by IDF weight;
 		List<SearchDTO> queryDTOs = new ArrayList<>();
+		List<String> adterms = new ArrayList<>();
 
 		for (String term : terms) {
 
 			if (!termDict.containsKey(term)) {
-				queryDTOs.add(new SearchDTO(term, 0.0));
-				continue;
+				
+				// find the term which has min distance
+				List<String> candidates = findMinDistanceWord(termDict, term);
+				
+				for(String candidate: candidates) {
+					if(!adterms.contains(candidate)) {
+						adterms.add(candidate);
+					}
+				}
+			} else {
+				if(!adterms.contains(term)) {
+					adterms.add(term);
+				}
 			}
-
+		}
+		
+		for(String term: adterms) {
+			
 			int df = termDict.get(term).getDocFreq();
 			double idf_weight = Math.log10((double) N / (double) df);
 
@@ -208,8 +223,45 @@ public class SearchDAOImpl implements SearchDAO {
 		return searchResult;
 	}
 	
+	public List<String> findMinDistanceWord(Map<String, PostingList> termDict, String queryTerm) {
+		int min = Integer.MAX_VALUE;
+		List<String> candidates = new ArrayList<>();
+		
+		for(String term: termDict.keySet()) {
+			int d = calculateDistance(term, queryTerm);
+			if(d < min) {
+				min = d;
+				candidates.clear();
+				candidates.add(term);
+			} else if(d == min) {
+				candidates.add(term);
+			}
+		}
+		
+		return candidates;
+	}
 	
-	
+	public int calculateDistance(String s1, String s2) {
+		if(s1.isEmpty()) return s2.length();
+		if(s2.isBlank()) return s1.length();
+		
+		int n = s1.length(), m = s2.length();
+		
+		int[][] dp = new int[n + 1][m + 1];
+		
+		for(int i = 1; i <= n; i++) {
+			for(int j = 1; j <= m; j++) {
+				int p = Math.min(dp[i - 1][j], dp[i][j - 1]);
+				if(s1.charAt(i - 1) == s2.charAt(j - 1)) {
+					dp[i][j] = Math.min(dp[i - 1][j - 1], p + 1);
+				} else {
+					dp[i][j] = Math.min(dp[i - 1][j - 1], p) + 1;
+				}
+			}
+		}
+		
+		return dp[n][m];
+	}
 	
 
 }

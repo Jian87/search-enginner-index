@@ -52,6 +52,8 @@ public class Parser {
 	
 	public void readFiles(File folder) throws IOException {
 		
+		int size = folder.list().length;
+		System.out.println("there are total " + size + " countries to be parsed");
 		for(File countryFolder: folder.listFiles()) {
 			if(countryFolder.listFiles() == null) {
 				continue;
@@ -68,7 +70,8 @@ public class Parser {
 					id2url = file;
 				}
 			}
-			
+			size--;
+			System.out.println("We are parsing " + countryFolder.getName() + ", Still left " + size + " countries to be parsed....");
 			if(dataFolder == null || webgraphFile == null || id2url == null) {
 				continue;
 			}
